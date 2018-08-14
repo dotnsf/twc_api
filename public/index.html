@@ -1,0 +1,142 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>The Weather Company API Sample</title>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+<script>
+//. 初期位置（東京駅）
+var lat = 35.6810912;
+var lng = 139.7671861;
+
+var map = null;
+var markers = [];
+var firsttime = true;
+var timer = -1;
+var icons = [];
+//var iconcolors = ["black","blue","green","grey","orange","red","violet","yellow"];
+var iconcolors = ["blue","grey","yellow","orange","red","violet","green","black"];
+
+$(function(){
+  //. 地図を OpenStreetMap データで表示
+  map = L.map('demoMap').setView( [ lat, lng ], 13 );
+  L.tileLayer(
+    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org/">OpenStreetMap</a>',
+      maxZoom: 18
+    }
+  ).addTo( map );
+
+  //. 必要なアイコンを用意しておく
+  for( var i = 0; i < iconcolors.length; i ++ ){
+    var icon = new L.Icon({
+      iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-' + iconcolors[i] + '.png',
+      shadowUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+      iconSize: [ 25, 41 ],
+      iconAnchor: [ 12, 41 ],
+      popupAnchor: [ 1, -34 ],
+      shadowSize: [ 41, 41 ]
+    });
+    icons.push( icon );
+  }
+
+  //$('input[type="checkbox"]').change( reDrawTrains );
+});
+
+function alertsByCountryCode( countryCode ){
+  $.ajax({
+    type: 'GET',
+    url: '/alertsByCountryCode?countryCode=' + countryCode,
+    success: function( data ){
+      console.log( data );
+      if( data && data.alerts && data.alerts.length ){
+        for( var i = 0; i < data.alerts.length && i < 30; i ++ ){
+          var alert = data.alerts[i];
+          var cntry_name = alert.cntry_name;
+          var st_name = alert.st_name;
+          var area_name = alert.area_name;
+          var event_desc = alert.event_desc;
+          var headline_text = alert.headline_text;
+          var lat = alert.lat;
+          var lng = alert.lon;
+          var severity_cd = alert.severity_cd;
+          var severity = alert.severity;
+          var urgency = alert.urgency;
+
+          var popup = '(' + event_desc + ')' + headline_text + ' @ ' + area_name + ( st_name ? ',' + st_name : '' );
+          var marker = L.marker( [ lat, lng ], { icon: icons[severity_cd] } ).addTo( map );
+          marker.bindPopup( popup ).openPopup();
+          markers.push( marker );
+        }
+        if( firsttime ){
+          var group = new L.featureGroup( markers );
+          map.fitBounds( group.getBounds() );
+          firsttime = false;
+        }
+      }
+    },
+    error: function( a, b, c ){
+      console.log( 'error' );
+      console.log( b + ' : ' + c );
+    }
+  });
+}
+
+function currentConditions(){
+  var center = map.getCenter();
+  var lat = center.lat;
+  var lng = center.lng;
+
+  $.ajax({
+    type: 'GET',
+    url: '/currentConditions?lat=' + lat + '&lng=' + lng,
+    success: function( data ){
+      console.log( data );
+      if( data.status && data.observation ){
+        var obs_name = data.observation.obs_name;
+        var pressure = data.observation.pressure;
+        var pressure_desc = data.observation.pressure_desc;
+        var temp = data.observation.temp;
+        var uv_index = data.observation.uv_index;
+        var uv_desc = data.observation.uv_desc;
+        var wdir = data.observation.wdir;
+        var wdir_cardinal = data.observation.wdir_cardinal;
+        var wspd = data.observation.wspd;
+
+        var body = obs_name + "\n"
+          + "Temp: " + temp + "\n"
+          + "Pressure: " + pressure + "(" + pressure_desc + ")\n"
+          + "UV index: " + uv_index + "(" + uv_desc + ")\n"
+          + "Wind: " + wdir_cardinal + "(" + wspd + ")\n"
+        alert( body );
+      }
+    },
+    error: function( a, b, c ){
+      console.log( 'error' );
+      console.log( b + ' : ' + c );
+    }
+  });
+}
+</script>
+<style>
+html, body  {
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+#demoMap {
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+<body>
+
+<input type="button" value="alertsByCountryCode" onClick="alertsByCountryCode('US');"/>
+<input type="button" value="currentConditions" onClick="currentConditions();"/>
+
+<div id="demoMap"></div>
+</body>
+</html>
