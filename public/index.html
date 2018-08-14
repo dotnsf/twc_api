@@ -76,9 +76,9 @@ function alertsByCountryCode( countryCode ){
         }
       }
     },
-    error: function( a, b, c ){
+    error: function( jqXHR, textStatus, errorThrown ){
       console.log( 'error' );
-      console.log( b + ' : ' + c );
+      console.log( textStatus + ": " + errorThrown );
     }
   });
 }
@@ -112,9 +112,35 @@ function currentConditions(){
         alert( body );
       }
     },
-    error: function( a, b, c ){
+    error: function( jqXHR, textStatus, errorThrown ){
       console.log( 'error' );
-      console.log( b + ' : ' + c );
+      console.log( textStatus + ": " + errorThrown );
+    }
+  });
+}
+
+function historicalData(){
+  var center = map.getCenter();
+  var lat = center.lat;
+  var lng = center.lng;
+
+  $.ajax({
+    type: 'GET',
+    url: '/historicalData?lat=' + lat + '&lng=' + lng,
+    success: function( data ){
+      console.log( data );
+      if( data.status && data.observations ){
+        var temps = '';
+        for( var i = 0; i < data.observations.length; i ++ ){
+          var temp = data.observations[i].temp;
+          temps += ( ' -> ' + temp );
+        }
+        alert( temps );
+      }
+    },
+    error: function( jqXHR, textStatus, errorThrown ){
+      console.log( 'error' );
+      console.log( textStatus + ": " + errorThrown );
     }
   });
 }
@@ -136,6 +162,7 @@ html, body  {
 
 <input type="button" value="alertsByCountryCode" onClick="alertsByCountryCode('US');"/>
 <input type="button" value="currentConditions" onClick="currentConditions();"/>
+<input type="button" value="historicalData" onClick="historicalData();"/>
 
 <div id="demoMap"></div>
 </body>

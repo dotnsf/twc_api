@@ -15,15 +15,19 @@ Sample applications of TWC(The Weather Company) API.
 - Deploy this application into the ones of **SDK for Node.js**.
 
 
-## Using API
+## Weather Company APIs
 
 - Weather Alerts
 
-    - Click **alertsByCountryCoe** button, then it will show top 30 weather alerts in US.
+    - Click **alertsByCountryCoe** button, then it will show top 30 weather alerts in USA.
 
 - Current Conditions
 
-    - Click **currentConditions** button, then it will show status for center of map.
+    - Click **currentConditions** button, then it will show weather status for center of map.
+
+- Historical Data
+
+    - Click **historicalData** button, then it will show 24-Hour historical weather observations for center of map.
 
 
 ## References
