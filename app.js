@@ -26,11 +26,11 @@ app.get( '/alertsByCountryCode', function( req, res ){
   if( countryCode ){
     var twc_api_url = settings.twc_api_url;
     if( !twc_api_url && settings.twc_host && settings.twc_username && settings.twc_password ){
-      twc_api_url = 'https://' + settings.twc_username + ':' + settings.twc_password + '@' + settings.twc_host + '/api/weather/';
+      twc_api_url = 'https://' + settings.twc_username + ':' + settings.twc_password + '@' + settings.twc_host;
     }
     if( twc_api_url ){
       var option = {
-        url: twc_api_url + 'v1/country/' + countryCode + '/alerts.json',
+        url: twc_api_url + '/api/weather/v1/country/' + countryCode + '/alerts.json',
         method: 'GET'
         /*
         headers: {
@@ -75,11 +75,11 @@ app.get( '/currentConditions', function( req, res ){
   if( lat !== null && lng !== null ){
     var twc_api_url = settings.twc_api_url;
     if( !twc_api_url && settings.twc_host && settings.twc_username && settings.twc_password ){
-      twc_api_url = 'https://' + settings.twc_username + ':' + settings.twc_password + '@' + settings.twc_host + '/api/weather/';
+      twc_api_url = 'https://' + settings.twc_username + ':' + settings.twc_password + '@' + settings.twc_host;
     }
     if( twc_api_url ){
       var option = {
-        url: twc_api_url + 'v1/geocode/' + lat + '/' + lng + '/observations.json?language=ja-JP',
+        url: twc_api_url + '/api/weather/v1/geocode/' + lat + '/' + lng + '/observations.json?language=ja-JP',
         method: 'GET'
       };
       request( option, ( err0, res0, body0 ) => {
@@ -118,11 +118,11 @@ app.get( '/historicalData', function( req, res ){
   if( lat !== null && lng !== null ){
     var twc_api_url = settings.twc_api_url;
     if( !twc_api_url && settings.twc_host && settings.twc_username && settings.twc_password ){
-      twc_api_url = 'https://' + settings.twc_username + ':' + settings.twc_password + '@' + settings.twc_host + '/api/weather/';
+      twc_api_url = 'https://' + settings.twc_username + ':' + settings.twc_password + '@' + settings.twc_host;
     }
     if( twc_api_url ){
       var option = {
-        url: twc_api_url + 'v1/geocode/' + lat + '/' + lng + '/observations/timeseries.json?hours=23&language=ja-JP',
+        url: twc_api_url + '/api/weather/v1/geocode/' + lat + '/' + lng + '/observations/timeseries.json?hours=23&language=ja-JP',
         method: 'GET'
       };
       request( option, ( err0, res0, body0 ) => {
